@@ -1,11 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
-    <script type="module" src="./main.js"></script>
+    <!-- <script type="importmap">
+{
+  "imports": {
+    "@bytecodealliance/preview2-shim/cli":        "./shim/preview2-shim/lib/browser/cli.js",
+    "@bytecodealliance/preview2-shim/filesystem": "./shim/preview2-shim/lib/browser/filesystem.js",
+    "@bytecodealliance/preview2-shim/io":         "./shim/preview2-shim/lib/browser/io.js",
+    "@bytecodealliance/preview2-shim/clocks":     "./shim/preview2-shim/lib/browser/clocks.js",
+    "@bytecodealliance/preview2-shim/random":     "./shim/preview2-shim/lib/browser/random.js",
+    "@bytecodealliance/preview2-shim/http":       "./shim/preview2-shim/lib/browser/http.js"
+  }
+}
+</script> -->
+    <script type="module">
+        import { instantiate } from "./plugged.js";
+
+        // Bring in the browser shims (named exports)
+        import * as cli from "./shim/preview2-shim/lib/browser/cli.js";
+        import * as io from "./shim/preview2-shim/lib/browser/io.js";
+        import * as fs from "./shim/preview2-shim/lib/browser/filesystem.js";
+        import * as clocks from "./shim/preview2-shim/lib/browser/clocks.js";
+        import * as random from "./shim/preview2-shim/lib/browser/random.js";
+        // (optional) HTTP if your component needs it
+        import * as http from "./shim/preview2-shim/lib/browser/http.js";
+
+        let coreInstance;
+
+        const imports = {
+            // --- your custom host import for callbacks ---
+            "emlite:env/dyncall": {
+                apply(fidx, argv, data) {
+                    const exp = coreInstance?.exports;
+                    const fn =
+                        exp?.emlite_env_dyncall_apply ||                // C export name
+                        exp?.['emlite:env/dyncall@0.1.0']?.apply;       // if namespaced
+                    if (!fn) throw new Error("guest dyncall trampoline not found");
+                    return fn(fidx, argv, data);
+                }
+            },
+
+            // --- WASI Preview2 shims: map WIT paths -> named shim objects ---
+            // cli
+            "wasi:cli/environment": cli.environment,
+            "wasi:cli/exit": cli.exit,
+            "wasi:cli/stdin": cli.stdin,
+            "wasi:cli/stdout": cli.stdout,
+            "wasi:cli/stderr": cli.stderr,
+            "wasi:cli/terminal-input": cli.terminalInput,
+            "wasi:cli/terminal-output": cli.terminalOutput,
+            "wasi:cli/terminal-stdin": cli.terminalStdin,
+            "wasi:cli/terminal-stdout": cli.terminalStdout,
+            "wasi:cli/terminal-stderr": cli.terminalStderr,
+
+            // io
+            "wasi:io/error": io.error,
+            "wasi:io/streams": io.streams,
+            "wasi:io/poll": io.poll,
+
+            // clocks
+            "wasi:clocks/monotonic-clock": clocks.monotonicClock,
+            "wasi:clocks/wall-clock": clocks.wallClock,
+
+            // filesystem
+            "wasi:filesystem/types": fs.types,
+            "wasi:filesystem/preopens": fs.preopens,
+
+            // random
+            "wasi:random/random": random.random,
+
+            // (http) uncomment if used by your component
+            "wasi:http/types": http.types,
+            "wasi:http/outgoing-handler": http.outgoingHandler,
+        };
+
+        async function getCoreModule(path) {
+            const url = new URL(`./${path}`, document.baseURI);
+            const bytes = await fetch(url).then(r => r.arrayBuffer());
+            return WebAssembly.compile(bytes);
+        }
+
+        async function instantiateCore(module, imp) {
+            const inst = await WebAssembly.instantiate(module, imp);
+            coreInstance = inst;              // let dyncall.apply call back into the guest
+            return inst;
+        }
+
+        const exports = await instantiate(getCoreModule, imports, instantiateCore);
+        console.log('Component ready:', exports);
+
+        if (typeof cli.setArgs === 'function') cli.setArgs(['arg1', 'arg2']);
+        if (typeof cli.setEnv === 'function') cli.setEnv({ FOO: 'bar' });
+
+        const cliRun = exports['wasi:cli/run']?.run;
+
+        if (typeof cliRun === 'function') {
+            await cliRun();                  // <-- this is your “main”
+        } else if (typeof exports.main === 'function') {
+            // If you explicitly exported a top-level `main` in your world, call that.
+            await exports.main();
+        } else {
+            console.warn('No run/main export found. Available exports:', Object.keys(exports));
+        }
+    </script>
 </body>
+
 </html>

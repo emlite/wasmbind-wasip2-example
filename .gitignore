@@ -2,3 +2,6 @@ bin
 node_modules
 dist/*.js
 dist/*.wasm
+dist/interfaces
+dist/plugged*
+dist/shim/**
