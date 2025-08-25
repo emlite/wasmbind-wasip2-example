@@ -1,6 +1,6 @@
 # wasmbind-example
 
-This is an example C++ repo which shows how you can use wasmbind to target web API via wasm32-wasi, wasmbind and emlite. It also demonstrates how this can be automated using webpack for bundling and http-server for serving.
+This is an example C++ repo which shows how you can use wasmbind to target web API via wasm32-wasip2, wasmbind and emlite. 
 
 Do note that using npm is not strictly necessary, however it simplifies bundling emlite and managing its version.
 
@@ -11,7 +11,8 @@ cd wasmbind-wasi-example
 npm i
 npm run cmake:config
 npm run cmake:build
-npm run pack
+npm run wac
+npm run jco
 npm run serve
 ```
 
