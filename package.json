@@ -1,0 +1,27 @@
+{
+  "name": "wasmbind-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "cmake:config": "cmake -Bbin -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=~/wasi-sdk-25.0-x86_64-linux/share/cmake/wasi-sdk-p2.cmake",
+    "cmake:build": "cmake --build bin",
+    "pack": "webpack --mode=production",
+    "serve": "npx http-server ./dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "@bytecodealliance/componentize-js": "^0.18.4",
+    "@bytecodealliance/jco": "^1.13.3",
+    "http-server": "^14.1.1",
+    "webpack": "^5.100.2",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@bjorn3/browser_wasi_shim": "^0.4.2",
+    "emlite": "^0.1.33"
+  }
+}
