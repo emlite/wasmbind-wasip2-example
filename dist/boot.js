@@ -86,7 +86,7 @@ export default async function init() {
     },
     getAppCore
   );
-  console.log(app);
+
   const exported =
     app.exports?.emlite_env_dyncall_apply ||
     app["emlite:env/dyncall"]?.apply ||
