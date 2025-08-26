@@ -13,10 +13,6 @@ const getAppCore = (p) =>
     fetch(new URL(`../bin/app/${p}`, import.meta.url))
   );
 
-async function inst(init, imports, getCore) {
-  return await init(getCore, imports);
-}
-
 function buildWasiImports() {
   const cli = cliMod,
     io = ioMod,
@@ -66,48 +62,36 @@ function buildWasiImports() {
   };
 }
 
-export default async function init() {
+async function instantiateApp() {
   const wasi = buildWasiImports();
 
-  let trampoline = null;
-  const dyncall = {
-    apply(fidx, argv, data) {
-      if (!trampoline) throw new Error("dyncall.apply");
-      return trampoline(fidx, argv, data);
-    },
+  // 1) Provide a placeholder; adapter will call this for callbacks.
+  let applyImpl = () => {
+    throw new Error("dyncall.apply not wired yet");
   };
 
-  const host = makeHost({ apply: dyncall.apply });
+  // 2) Build the host, injecting a delegating apply
+  const host = makeHost({ apply: (...args) => applyImpl(...args) });
 
-  const app = await inst(
-    initApp,
-    {
-      ...wasi,
-      "emlite:env/host": host,
-      "emlite:env/host@0.1.0": host,
-      "emlite:env/dyncall": dyncall,
-      "emlite:env/dyncall@0.1.0": dyncall,
-    },
-    getAppCore
-  );
+  // 3) Instantiate the app (no dyncall import needed)
+  const app = await initApp(getAppCore, {
+    ...wasi,
+    "emlite:env/host": host,
+    "emlite:env/host@0.1.0": host,
+  });
 
+  // 4) Wire the host’s apply to the app’s exported trampoline
   const exported =
-    app.exports?.emlite_env_dyncall_apply ||
-    app["emlite:env/dyncall"]?.apply ||
-    app["emlite:env/dyncall@0.1.0"]?.apply;
+    app["emlite:env/dyncall@0.1.0"]?.apply ||
+    app["emlite:env/dyncall"]?.apply;
 
   if (!exported) {
-    throw new Error(
-      "App does not export a dyncall trampoline. " +
-        "Ensure your C++ build enables emlite dyncall export " +
-        "(e.g., link the emlite support that defines `emlite_env_dyncall_apply`)."
-    );
+    throw new Error("Guest didn’t export emlite:env/dyncall.apply");
   }
-
-  trampoline = exported;
+  applyImpl = exported;
 
   return app;
 }
 
-let app = await init();
+let app = await instantiateApp();
 app.iface.start([]);
