@@ -1,15 +1,15 @@
-import { makeHost } from "./adapter.js";
-import { instantiate as initApp } from "./app/main.js";
+import { makeHost } from "emlite/wasip2adapter";
+import { instantiate as initApp } from "../dist/app/main.js";
 
-import * as cliMod    from "./shim/preview2-shim/lib/browser/cli.js";
-import * as ioMod     from "./shim/preview2-shim/lib/browser/io.js";
-import * as clocksMod from "./shim/preview2-shim/lib/browser/clocks.js";
-import * as randMod   from "./shim/preview2-shim/lib/browser/random.js";
-import * as fsMod     from "./shim/preview2-shim/lib/browser/filesystem.js";
-import * as httpMod   from "./shim/preview2-shim/lib/browser/http.js";
+import * as cliMod    from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/cli.js";
+import * as ioMod     from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/io.js";
+import * as clocksMod from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/clocks.js";
+import * as randMod   from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/random.js";
+import * as fsMod     from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/filesystem.js";
+import * as httpMod   from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/http.js";
 
 const getAppCore = (p) =>
-  WebAssembly.compileStreaming(fetch(new URL(`./app/${p}`, import.meta.url)));
+  WebAssembly.compileStreaming(fetch(new URL(`../dist/app/${p}`, import.meta.url)));
 
 async function inst(init, imports, getCore) {
   try { return await init(getCore, imports); }
@@ -104,3 +104,6 @@ export default async function init() {
 
   return app;
 }
+
+let app = await init();
+app.iface.start([]);

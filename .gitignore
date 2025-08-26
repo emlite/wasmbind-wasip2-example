@@ -3,6 +3,6 @@ node_modules
 dist/*.wasm
 dist/interfaces
 dist/plugged*
-dist/shim/**
+dist/*.ts
+dist/*.js
 dist/app
-dist/emlite
