@@ -1,64 +1,68 @@
 import { makeHost } from "emlite/wasip2adapter";
 import { instantiate as initApp } from "../dist/app/main.js";
 
-import * as cliMod    from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/cli.js";
-import * as ioMod     from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/io.js";
-import * as clocksMod from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/clocks.js";
-import * as randMod   from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/random.js";
-import * as fsMod     from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/filesystem.js";
-import * as httpMod   from "../node_modules/@bytecodealliance/preview2-shim/lib/browser/http.js";
+import * as cliMod from "@bytecodealliance/preview2-shim/cli";
+import * as ioMod from "@bytecodealliance/preview2-shim/io";
+import * as clocksMod from "@bytecodealliance/preview2-shim/clocks";
+import * as randMod from "@bytecodealliance/preview2-shim/random";
+import * as fsMod from "@bytecodealliance/preview2-shim/filesystem";
+import * as httpMod from "@bytecodealliance/preview2-shim/http";
 
 const getAppCore = (p) =>
-  WebAssembly.compileStreaming(fetch(new URL(`../dist/app/${p}`, import.meta.url)));
+  WebAssembly.compileStreaming(
+    fetch(new URL(`../dist/app/${p}`, import.meta.url))
+  );
 
 async function inst(init, imports, getCore) {
-  try { return await init(getCore, imports); }
-  catch { return await init(imports, getCore); }
+  return await init(getCore, imports);
 }
 
 function buildWasiImports() {
-  const cli = cliMod, io = ioMod, clocks = clocksMod, random = randMod, fs = fsMod, http = httpMod;
+  const cli = cliMod,
+    io = ioMod,
+    clocks = clocksMod,
+    random = randMod,
+    fs = fsMod,
+    http = httpMod;
   return {
     // wasi:cli/*
     "wasi:cli/environment": cli.environment,
-    "wasi:cli/exit":        cli.exit,
-    "wasi:cli/stdin":       cli.stdin,
-    "wasi:cli/stdout":      cli.stdout,
-    "wasi:cli/stderr":      cli.stderr,
-    "wasi:cli/terminal-input":  cli.terminalInput,
+    "wasi:cli/exit": cli.exit,
+    "wasi:cli/stdin": cli.stdin,
+    "wasi:cli/stdout": cli.stdout,
+    "wasi:cli/stderr": cli.stderr,
+    "wasi:cli/terminal-input": cli.terminalInput,
     "wasi:cli/terminal-output": cli.terminalOutput,
-    "wasi:cli/terminal-stdin":  cli.terminalStdin,
+    "wasi:cli/terminal-stdin": cli.terminalStdin,
     "wasi:cli/terminal-stdout": cli.terminalStdout,
     "wasi:cli/terminal-stderr": cli.terminalStderr,
 
     // wasi:io/*
     "wasi:io/streams": io.streams,
-    "wasi:io/error":   io.error,
-    "wasi:io/poll":    io.poll,
+    "wasi:io/error": io.error,
+    "wasi:io/poll": io.poll,
 
     // wasi:clocks/*
-    "wasi:clocks/monotonic-clock":
-      clocks.monotonicClock,
-    "wasi:clocks/wall-clock":
-      clocks.wallClock,
+    "wasi:clocks/monotonic-clock": clocks.monotonicClock,
+    "wasi:clocks/wall-clock": clocks.wallClock,
 
     // wasi:random/*
     "wasi:random/random": random.random,
 
     // wasi:filesystem/*
-    "wasi:filesystem/preopens":   fs.preopens,
+    "wasi:filesystem/preopens": fs.preopens,
     "wasi:filesystem/filesystem": fs.filesystem,
-    "wasi:filesystem/types":      fs.types,
+    "wasi:filesystem/types": fs.types,
     "wasi:filesystem/descriptor": fs.descriptor,
 
     // wasi:http/*
-    "wasi:http/types":            http.types,
-    "wasi:http/fields":           http.fields,
-    "wasi:http/error":            http.error,
+    "wasi:http/types": http.types,
+    "wasi:http/fields": http.fields,
+    "wasi:http/error": http.error,
     "wasi:http/outgoing-handler": http.outgoingHandler,
     "wasi:http/incoming-handler": http.incomingHandler,
-    "wasi:http/outgoing-body":    http.outgoingBody,
-    "wasi:http/incoming-body":    http.incomingBody,
+    "wasi:http/outgoing-body": http.outgoingBody,
+    "wasi:http/incoming-body": http.incomingBody,
   };
 }
 
@@ -95,8 +99,8 @@ export default async function init() {
   if (!exported) {
     throw new Error(
       "App does not export a dyncall trampoline. " +
-      "Ensure your C++ build enables emlite dyncall export " +
-      "(e.g., link the emlite support that defines `emlite_env_dyncall_apply`)."
+        "Ensure your C++ build enables emlite dyncall export " +
+        "(e.g., link the emlite support that defines `emlite_env_dyncall_apply`)."
     );
   }
 
