@@ -20,16 +20,16 @@ extern "C" uint32_t exports_my_app_iface_start(app_list_string_t *args) {
     auto button = document.createElement("BUTTON");
     button.textContent("Click me");
     printf("%s\n", button.textContent().c_str().get());
-    // button.addEventListener(
-    //     "click",
-    //     Function::Fn<void(PointerEvent)>([=](auto /*p*/) {
-    //         printf("Playing audio\n");
-    //         auto os = oscillator.clone();
-    //         os.connect(context.destination().as<AudioParam>(
-    //         ));
-    //         os.start(0.0);
-    //     })
-    // );
+    button.addEventListener(
+        "click",
+        Function::Fn<void(PointerEvent)>([=](auto /*p*/) {
+            printf("Playing audio\n");
+            auto os = oscillator.clone();
+            os.connect(context.destination().as<AudioParam>(
+            ));
+            os.start(0.0);
+        })
+    );
     body.appendChild(button);
     return 0;
 }

@@ -4,11 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "cmake:config": "cmake -Bbin -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=~/wasi-sdk-25.0-x86_64-linux/share/cmake/wasi-sdk-p2.cmake",
+    "cmake:config": "cmake -Bbin -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=~/wasi-sdk-25.0-x86_64-linux/share/cmake/wasi-sdk-p2.cmake",
     "cmake:build": "cmake --build bin",
     "prep": "cp -r node_modules/@bytecodealliance/preview2-shim dist/shim/preview2-shim",
-    "wac": "# wac plug bin/main.wasm --plug ../emlite-js/emlite.wasm -o plugged.wasm",
-    "jco:emlite": "npx jco transpile ../emlite-js/emlite.wasm -o dist/emlite --instantiation",
     "jco:app": "npx jco transpile ./bin/main.wasm -o dist/app --instantiation",
     "serve": "npx http-server ./dist"
   },
