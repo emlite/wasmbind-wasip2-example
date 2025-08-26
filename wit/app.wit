@@ -1,0 +1,13 @@
+package my:app@0.1.0;
+
+interface iface {
+  // pick whatever you want for entry
+  start: func(args: list<string>) -> u32;
+}
+
+world app {
+  export iface;
+  // your existing deps:
+  // import emlite:env/host@0.1.0;
+  // import emlite:env/dyncall@0.1.0;
+}
