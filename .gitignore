@@ -1,8 +1,5 @@
 bin
 node_modules
 dist/*.wasm
-dist/interfaces
-dist/plugged*
 dist/*.ts
 dist/*.js
-dist/app

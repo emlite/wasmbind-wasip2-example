@@ -1,5 +1,5 @@
 import { makeHost } from "emlite/wasip2adapter";
-import { instantiate as initApp } from "../dist/app/main.js";
+import { instantiate as initApp } from "../bin/app/main.js";
 
 import * as cliMod from "@bytecodealliance/preview2-shim/cli";
 import * as ioMod from "@bytecodealliance/preview2-shim/io";
@@ -10,7 +10,7 @@ import * as httpMod from "@bytecodealliance/preview2-shim/http";
 
 const getAppCore = (p) =>
   WebAssembly.compileStreaming(
-    fetch(new URL(`../dist/app/${p}`, import.meta.url))
+    fetch(new URL(`../bin/app/${p}`, import.meta.url))
   );
 
 async function inst(init, imports, getCore) {
