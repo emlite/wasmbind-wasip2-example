@@ -1,13 +1,14 @@
+import { Emlite } from "emlite";
 import { makeHost } from "emlite/wasip2adapter";
 import { instantiate as initApp } from "../bin/app/main.js";
 import { WASIShim } from "@bytecodealliance/preview2-shim/instantiation";
 
-const getAppCore = (p) =>
-  WebAssembly.compileStreaming(
-    fetch(new URL(`../bin/app/${p}`, import.meta.url))
-  );
-
 async function instantiateApp() {
+  const getAppCore = (p) =>
+    WebAssembly.compileStreaming(
+      fetch(new URL(`../bin/app/${p}`, import.meta.url))
+    );
+
   const wasiShim = new WASIShim({
     // optional:
     // args: [],
@@ -16,11 +17,13 @@ async function instantiateApp() {
   });
   const wasi = wasiShim.getImportObject();
 
+  const emlite = new Emlite();
+
   let applyImpl = () => {
     throw new Error("dyncall.apply not wired yet");
   };
 
-  const host = makeHost({ apply: (...args) => applyImpl(...args) });
+  const host = makeHost({ emlite, apply: (...args) => applyImpl(...args) });
 
   const app = await initApp(getAppCore, {
     ...wasi,
@@ -40,5 +43,9 @@ async function instantiateApp() {
   return app;
 }
 
-const app = await instantiateApp();
-app.iface.start([]);
+async function main() {
+  const app = await instantiateApp();
+  app.iface.start([]);
+}
+
+await main();
