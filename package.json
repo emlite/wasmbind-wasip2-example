@@ -6,7 +6,7 @@
   "scripts": {
     "cmake:config": "cmake -Bbin -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=~/wasi-sdk-25.0-x86_64-linux/share/cmake/wasi-sdk-p2.cmake",
     "cmake:build": "cmake --build bin",
-    "jco:app": "npx jco transpile ./bin/main.wasm -o bin/app --instantiation --no-nodejs-compat --tla-compat",
+    "jco:app": "npx jco transpile ./bin/main.wasm -o bin/app --instantiation async --no-nodejs-compat --tla-compat",
     "pack": "webpack --mode=production",
     "serve": "npx http-server ./dist"
   },
@@ -15,7 +15,7 @@
   "license": "MIT",
   "description": "",
   "devDependencies": {
-    "@bytecodealliance/jco": "^1.13.3",
+    "@bytecodealliance/jco": "^1.14.0",
     "http-server": "^14.1.1",
     "webpack": "^5.100.2",
     "webpack-cli": "^6.0.1"
