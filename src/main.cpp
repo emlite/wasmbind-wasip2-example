@@ -2,12 +2,12 @@
 #include <webbind/webbind.hpp>
 #include <stdio.h>
 #include <stdint.h>
-#include "app.h"
+#include "app_cpp.h"
 
 using jsbind::Function;
 using namespace webbind;
 
-extern "C" uint32_t exports_my_app_iface_start(app_list_string_t *args) {
+uint32_t exports::my::app::iface::Start(wit::vector<wit::string> args) {
     emlite::init();
     AudioContext context;
     OscillatorNode oscillator(context);
