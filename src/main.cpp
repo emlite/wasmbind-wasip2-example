@@ -19,11 +19,9 @@ uint32_t exports::my::app::iface::Start(wit::vector<wit::string> args) {
         document.getElementsByTagName("body").item(0);
     auto button = document.createElement("BUTTON");
     button.textContent("Click me");
-    printf("%s\n", button.textContent().c_str().get());
     button.addEventListener(
         "click",
-        Function::Fn<void(PointerEvent)>([=](auto /*p*/) {
-            printf("Playing audio\n");
+        Function::Fn<jsbind::Undefined(Event)>([=](auto /*p*/) {
             auto os = oscillator.clone();
             os.connect(context.destination().as<AudioParam>(
             ));
