@@ -22,24 +22,20 @@ async function instantiateApp() {
   let applyImpl = () => {
     throw new Error("dyncall.apply not wired yet");
   };
+  let targetImpl = () => -1;
 
-  const host = makeHost({ emlite, apply: (...args) => applyImpl(...args) });
+  const host = makeHost({ emlite, apply: (...args) => applyImpl(...args), target: () => targetImpl() });
 
   const app = await initApp(getAppCore, {
     ...wasi,
     "emlite:env/host": host,
-    "emlite:env/host@0.1.0": host,
   });
 
-  const exported =
-    app["emlite:env/dyncall@0.1.0"]?.apply ||
-    app["emlite:env/dyncall"]?.apply;
 
-  if (!exported) {
-    throw new Error("Guest didn’t export emlite:env/dyncall.apply");
-  }
-  applyImpl = exported;
+  applyImpl = app["emlite:env/dyncall@0.1.0"]?.apply;
 
+  targetImpl = app["emlite:env/dyncall@0.1.0"]?.emliteTarget;
+  console.log(app);
   return app;
 }
 
