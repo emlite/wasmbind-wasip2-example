@@ -23,21 +23,5 @@ void *cabi_realloc(void *ptr, size_t old_size, size_t align, size_t new_size) {
 }
 
 
-extern "C" __attribute__((__export_name__("my:app/iface@0.1.0#start")))
-int32_t myX3AappX2FifaceX400X2E1X2E0X23start(uint8_t * arg0, size_t arg1)
-{
-  auto base1 = arg0;
-  auto len1 = arg1;
-  auto result1 = wit::vector<wit::string>::allocate(len1);
-  for (unsigned i=0; i<len1; ++i) {
-    auto base = base1 + i * (2*sizeof(void*));
-    auto len0 = *((size_t*) (base + sizeof(void*)));
-
-    auto e1 = wit::string((char const*)(*((uint8_t**) (base + 0))), len0);
-    result1.initialize(i, std::move(e1));
-  }
-  auto result2 = exports::my::app::iface::Start(std::move(result1));
-  return (int32_t(result2));
-}
 
 // Component Adapters

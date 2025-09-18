@@ -1,9 +1,4 @@
 package my:app@0.1.0;
 
-interface iface {
-  start: func(args: list<string>) -> u32;
-}
-
 world app {
-  export iface;
 }

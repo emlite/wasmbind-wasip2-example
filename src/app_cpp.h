@@ -3,16 +3,5 @@
 #define __CPP_GUEST_BINDINGS_APP_H
 #include <cstdint>
 #include <utility>
-#include "wit.h"
-// export_interface Interface(Id { idx: 0 })
-namespace exports {
-  namespace my {
-    namespace app {
-      namespace iface {
-        uint32_t Start(wit::vector<wit::string> args);
-      }
-    }
-  }
-}
 
 #endif

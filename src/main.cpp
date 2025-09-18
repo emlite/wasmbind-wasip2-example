@@ -7,7 +7,7 @@
 using jsbind::Function;
 using namespace webbind;
 
-uint32_t exports::my::app::iface::Start(wit::vector<wit::string> args) {
+int main() { 
     emlite::init();
     AudioContext context;
     OscillatorNode oscillator(context);

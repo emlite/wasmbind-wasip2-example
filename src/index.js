@@ -9,12 +9,7 @@ async function instantiateApp() {
       fetch(new URL(`../bin/app/${p}`, import.meta.url))
     );
 
-  const wasiShim = new WASIShim({
-    // optional:
-    // args: [],
-    // env: {},
-    // preopens: {}, // browser FS
-  });
+  const wasiShim = new WASIShim({});
   const wasi = wasiShim.getImportObject();
 
   const emlite = new Emlite();
@@ -41,7 +36,7 @@ async function instantiateApp() {
 
 async function main() {
   const app = await instantiateApp();
-  app.iface.start([]);
+  app.run.run();
 }
 
 await main();
