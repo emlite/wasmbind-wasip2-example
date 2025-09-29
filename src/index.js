@@ -4,10 +4,12 @@ import { WASIShim } from "@bytecodealliance/preview2-shim/instantiation";
 import { instantiate as initApp } from "../bin/app/main.js";
 
 async function main() {
-  const getAppCore = (p) =>
-    WebAssembly.compileStreaming(
-      fetch(new URL(`../bin/app/${p}`, import.meta.url))
+  const getAppCore = async (p) => {
+    const bytes = await emlite.readFile(
+      new URL(`../bin/app/${p}`, import.meta.url)
     );
+    return WebAssembly.compile(bytes);
+  };
 
   const wasiShim = new WASIShim({});
   const wasi = wasiShim.getImportObject();
