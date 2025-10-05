@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "cmake:config": "cmake -Bbin -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=~/wasi-sdk-25.0-x86_64-linux/share/cmake/wasi-sdk-p2.cmake",
+    "cmake:config": "cmake -Bbin -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=$WASI_SDK/share/cmake/wasi-sdk-p2.cmake",
     "cmake:build": "cmake --build bin",
     "jco:app": "npx jco transpile ./bin/main.wasm -O -o bin/app --instantiation async --no-nodejs-compat --tla-compat --no-typescript",
     "pack": "webpack --mode=production",
